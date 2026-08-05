@@ -298,7 +298,9 @@ body {
     transition: border-color 0.2s ease, box-shadow 0.25s ease, background-color 0.2s ease;
 }
 
-.auth-form input::placeholder { color: var(--text-faint); }
+.auth-form input::placeholder {
+    color: var(--text-faint);
+}
 
 .otp-inputs {
     display: flex;
@@ -385,7 +387,9 @@ body {
     background-position: 100% 100%;
 }
 
-.auth-form button:hover::after { left: 130%; }
+.auth-form button:hover::after {
+    left: 130%;
+}
 
 .auth-form button:active {
     transform: scale(0.97);
@@ -417,8 +421,12 @@ body {
     transition: transform 0.25s ease;
 }
 
-.switch-link a:hover { color: var(--amber-light); }
-.switch-link a:hover::after { transform: scaleX(1); transform-origin: left; }
+.switch-link a:hover {
+    color: var(--amber-light);
+}
+.switch-link a:hover::after {
+    transform: scaleX(1); transform-origin: left;
+}
 
 
 @media (max-width: 900px) {

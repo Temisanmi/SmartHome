@@ -48,7 +48,6 @@ public class SecurityConfig {
                 )
                 .addFilterAfter(otpVerificationFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(AbstractHttpConfigurer::disable);
-
         return http.build();
     }
 }
