@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>My Profile</title>
+        <th:block th:replace="~{fragments/head :: favicon}"></th:block>
+        <link rel="stylesheet" th:href="@{/css/auth.css}">
+    </head>
+
+    <body>
+        <div class="auth-page">
+            <div class="auth-hero">
+                <div class="hero-content">
+                    <h1>Your home,<br>at a glance.</h1>
+                    <p class="hero-tagline">Account details and your home, all in one place.</p>
+
+                    <div class="device-network">
+                        <svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <line class="net-line active" x1="220" y1="165" x2="220" y2="40"/>
+                            <line class="net-line" x1="220" y1="165" x2="339" y2="126"/>
+                            <line class="net-line active" x1="220" y1="165" x2="294" y2="266"/>
+                            <line class="net-line" x1="220" y1="165" x2="146" y2="266"/>
+                            <line class="net-line" x1="220" y1="165" x2="101" y2="126"/>
+
+                            <g class="net-node hub"><circle cx="220" cy="165" r="16"/></g>
+                            <g class="net-node on"><circle class="ring" cx="220" cy="40" r="11"/><circle class="core" cx="220" cy="40" r="6"/></g>
+                            <g class="net-node off"><circle class="ring" cx="339" cy="126" r="11"/><circle class="core" cx="339" cy="126" r="6"/></g>
+                            <g class="net-node on"><circle class="ring" cx="294" cy="266" r="11"/><circle class="core" cx="294" cy="266" r="6"/></g>
+                            <g class="net-node off"><circle class="ring" cx="146" cy="266" r="11"/><circle class="core" cx="146" cy="266" r="6"/></g>
+                            <g class="net-node off"><circle class="ring" cx="101" cy="126" r="11"/><circle class="core" cx="101" cy="126" r="6"/></g>
+                        </svg>
+                    </div>
+
+                    <p class="hero-support">Everything here traces back to the one account that started it all.</p>
+                </div>
+            </div>
+
+            <div class="auth-panel">
+                <div class="auth-container" style="max-width: 440px;">
+                    <div class="hero-mark"><img th:src="@{/images/logo-mark.png}" alt="Smart Home logo" class="hero-logo">SMART HOME · CONTROL CENTER</div>
+                    <h2>My Profile</h2>
+                    <p class="subtitle">Account &amp; Home Details</p>
+
+                    <div class="auth-form" style="gap: 2px;">
+                        <label>Username</label>
+                        <p style="color: #e8eaf0; font-size: 14px; margin-bottom: 4px;" th:text="${user.username}"></p>
+
+                        <label>Email</label>
+                        <p style="color: #e8eaf0; font-size: 14px; margin-bottom: 4px;" th:text="${user.email}"></p>
+
+                        <label>Password</label>
+                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 4px; letter-spacing: 2px;">••••••••</p>
+
+                        <label>Account Created</label>
+                        <p style="color: #e8eaf0; font-size: 14px; margin-bottom: 4px;"
+                           th:text="${#temporals.format(user.createdAt, 'MMMM d, yyyy')}"></p>
+
+                        <div th:if="${home != null}">
+                            <label>Home Name</label>
+                            <p style="color: #e8eaf0; font-size: 14px; margin-bottom: 4px;" th:text="${home.name}"></p>
+
+                            <label>Home Address</label>
+                            <p style="color: #e8eaf0; font-size: 14px; margin-bottom: 4px;" th:text="${home.address}"></p>
+
+                            <label>Home Created</label>
+                            <p style="color: #e8eaf0; font-size: 14px;"
+                               th:text="${#temporals.format(home.createdAt, 'MMMM d, yyyy')}"></p>
+                        </div>
+                    </div>
+
+                    <p class="switch-link" style="margin-top: 28px;">
+                        <a th:href="@{/dashboard}">← Back to Dashboard</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

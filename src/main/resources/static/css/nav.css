@@ -1,0 +1,25 @@
+.site-nav {
+    display: flex;
+    align-items: center;
+    padding: 4px 16px 14px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+.brand-logo {
+    height: 40px;
+    width: auto;
+    display: block;
+}
+.brand-name {
+    font-family: 'Sora', 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #f3f4f8;
+    letter-spacing: -0.01em;
+}
+.brand:hover .brand-name { color: #ffc766; }

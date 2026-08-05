@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Error - Smart Home</title>
+        <th:block th:replace="~{fragments/head :: favicon}"></th:block>
+        <link rel="stylesheet" th:href="@{/css/auth.css}">
+    </head>
+
+    <body>
+        <div class="auth-page">
+            <div class="auth-hero">
+                <div class="hero-content">
+                    <h1>Every room,<br>one dashboard.</h1>
+                    <p class="hero-tagline">Lights, locks, appliances and power — all synced, all in one place.</p>
+                </div>
+            </div>
+
+            <div class="auth-panel">
+                <div class="auth-container">
+                    <div class="hero-mark"><img th:src="@{/images/logo-mark.png}" alt="Smart Home logo" class="hero-logo">SMART HOME · CONTROL CENTER</div>
+                    <h2>Something went wrong</h2>
+                    <p class="subtitle" th:text="${message}">Error message</p>
+                    <a th:href="@{/dashboard}" class="switch-link" style="display:block; margin-top: 20px;">← Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

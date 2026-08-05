@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <th:block th:replace="~{fragments/head :: favicon}"></th:block>
+        <link rel="stylesheet" th:href="@{/css/nav.css}">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>User details | SmartHome</title>
+        <link rel="stylesheet" th:href="@{/css/admin.css}">
+    </head>
+
+    <body>
+        <main class="admin-shell detail-shell">
+            <a class="back-link" th:href="@{/admin/dashboard}">Back to admin dashboard</a>
+
+            <div th:if="${successMessage}" class="flash-message success" th:text="${successMessage}">Saved</div>
+            <div th:if="${errorMessage}" class="flash-message error" th:text="${errorMessage}">Error</div>
+
+            <header class="detail-header">
+                <div>
+                    <p class="eyebrow">Account management</p>
+                    <h1 th:text="${managedUser.username}">User</h1>
+                    <p th:text="${managedUser.email}">email</p>
+                </div>
+
+                <div class="account-tags">
+                    <span class="role-badge" th:classappend="${managedUser.role.name() == 'ADMIN'} ? ' role-admin' : ' role-user'" th:text="${managedUser.role}">USER</span>
+                    <span class="status" th:classappend="${managedUser.active} ? ' status-active' : ' status-suspended'" th:text="${managedUser.active ? 'Active account' : 'Suspended account'}">Active</span>
+                </div>
+            </header>
+
+            <section class="detail-grid">
+                <section class="panel form-panel">
+                    <div class="panel-heading"><div><p class="section-kicker">Profile</p><h2>Account details</h2></div></div>
+                    <form th:action="@{/admin/users/{id}/profile(id=${managedUser.id})}" th:object="${userRequest}" method="post" class="stack-form">
+                        <label>Username<input type="text" th:field="*{username}" required maxlength="20"></label>
+                        <label>Email address<input type="email" th:field="*{email}" required></label>
+                        <button type="submit">Save account details</button>
+                    </form>
+                </section>
+
+                <section class="panel form-panel">
+                    <div class="panel-heading"><div><p class="section-kicker">Access</p><h2>Account controls</h2></div></div>
+                    <p class="control-copy">Suspending an account prevents sign-in and preserves the users homes, devices, schedules, and history.</p>
+                    <form th:action="@{/admin/users/{id}/status(id=${managedUser.id})}" method="post" class="inline-form">
+                        <input type="hidden" name="active" th:value="${!managedUser.active}">
+                        <button type="submit" th:classappend="${managedUser.active} ? ' danger-button' : ''" th:text="${managedUser.active ? 'Suspend account' : 'Reactivate account'}">Update</button>
+                    </form>
+                    <hr>
+                    <p class="control-copy">Only administrators can access this control centre.</p>
+                    <form th:action="@{/admin/users/{id}/role(id=${managedUser.id})}" method="post" class="inline-form">
+                        <select name="role" aria-label="Account role">
+                            <option value="USER" th:selected="${managedUser.role.name() == 'USER'}">User</option>
+                            <option value="ADMIN" th:selected="${managedUser.role.name() == 'ADMIN'}">Administrator</option>
+                        </select>
+                        <button type="submit">Update role</button>
+                    </form>
+                </section>
+            </section>
+
+            <section th:if="${managedUser.home != null}" class="panel home-panel">
+                <div class="panel-heading"><div><p class="section-kicker">Property</p><h2 th:text="${managedUser.home.name}">Home</h2></div><div class="power-readout" th:if="${powerSummary != null}"><span>Current estimated load</span><strong th:text="${powerSummary.totalWatts + ' W'}">0 W</strong></div></div>
+                <form th:action="@{/admin/users/{id}/home(id=${managedUser.id})}" th:object="${homeRequest}" method="post" class="home-form">
+                    <label>Home name<input type="text" th:field="*{name}" required></label>
+                    <label>Address<input type="text" th:field="*{address}" required></label>
+                    <label>Tariff per kWh<input type="number" th:field="*{tariffPerKwh}" min="0" step="0.01" required></label>
+                    <button type="submit">Save home details</button>
+                </form>
+
+                <div class="rooms-list">
+                    <article class="room" th:each="room : ${managedUser.home.rooms}">
+                        <div class="room-heading"><h3 th:text="${room.name}">Room</h3><span th:text="${room.devices.size() + ' devices'}">0 devices</span></div>
+                        <ul>
+                            <li th:each="device : ${room.devices}"><span th:text="${device.name}">Device</span><span th:text="${device.powerRatingWatts + ' W rated'}">0 W</span></li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
+            <section th:unless="${managedUser.home != null}" class="panel empty-home"><p>This user has not created a home yet.</p></section>
+        </main>
+    </body>
+</html>

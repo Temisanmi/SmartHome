@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Add Schedule</title>
+        <th:block th:replace="~{fragments/head :: favicon}"></th:block>
+        <link rel="stylesheet" th:href="@{/css/auth.css}">
+    </head>
+
+    <body>
+        <div class="auth-page">
+
+            <div class="auth-hero">
+                <div class="hero-content">
+                    <h1>Set it,<br>then forget it.</h1>
+                    <p class="hero-tagline">Give <span th:text="${device.name}">this device</span> a routine — once, or every day.</p>
+
+                    <div class="device-network">
+                        <svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <line class="net-line active" x1="220" y1="165" x2="220" y2="40"/>
+                            <line class="net-line" x1="220" y1="165" x2="339" y2="126"/>
+                            <line class="net-line active" x1="220" y1="165" x2="294" y2="266"/>
+                            <line class="net-line" x1="220" y1="165" x2="146" y2="266"/>
+                            <line class="net-line" x1="220" y1="165" x2="101" y2="126"/>
+
+                            <g class="net-node hub"><circle cx="220" cy="165" r="16"/></g>
+                            <g class="net-node on"><circle class="ring" cx="220" cy="40" r="11"/><circle class="core" cx="220" cy="40" r="6"/></g>
+                            <g class="net-node off"><circle class="ring" cx="339" cy="126" r="11"/><circle class="core" cx="339" cy="126" r="6"/></g>
+                            <g class="net-node on"><circle class="ring" cx="294" cy="266" r="11"/><circle class="core" cx="294" cy="266" r="6"/></g>
+                            <g class="net-node off"><circle class="ring" cx="146" cy="266" r="11"/><circle class="core" cx="146" cy="266" r="6"/></g>
+                            <g class="net-node off"><circle class="ring" cx="101" cy="126" r="11"/><circle class="core" cx="101" cy="126" r="6"/></g>
+                        </svg>
+                    </div>
+
+                    <p class="hero-support">Schedules run automatically, even when you're not watching.</p>
+                </div>
+            </div>
+
+            <div class="auth-panel">
+                <div class="auth-container">
+                    <div class="hero-mark"><img th:src="@{/images/logo-mark.png}" alt="Smart Home logo" class="hero-logo">SMART HOME · CONTROL CENTER</div>
+                    <h2>Schedule</h2>
+                    <p class="subtitle" th:text="${device.name}">Device</p>
+
+                    <form th:action="@{/schedules/add}" method="post" class="auth-form" id="scheduleForm">
+                        <input type="hidden" name="deviceId" th:value="${device.id}">
+
+                        <label for="scheduleType">Type</label>
+                        <select id="scheduleType" name="scheduleType" onchange="toggleFields()">
+                            <option value="ONE_TIME">One-time</option>
+                            <option value="RECURRING">Recurring (daily)</option>
+                        </select>
+
+                        <label for="action">Action</label>
+                        <select id="action" name="action" onchange="toggleValueField()">
+                            <!-- SmartLight -->
+                            <optgroup th:if="${deviceType == 'SmartLight'}" label="Light">
+                                <option value="TURN_ON">Turn On</option>
+                                <option value="TURN_OFF">Turn Off</option>
+                                <option value="SET_BRIGHTNESS">Set Brightness</option>
+                            </optgroup>
+                            <!-- Thermostat -->
+                            <optgroup th:if="${deviceType == 'Thermostat'}" label="Thermostat">
+                                <option value="SET_TARGET_TEMP">Set Target Temperature</option>
+                            </optgroup>
+                            <!-- SmartLock -->
+                            <optgroup th:if="${deviceType == 'SmartLock'}" label="Lock">
+                                <option value="LOCK">Lock</option>
+                                <option value="UNLOCK">Unlock</option>
+                            </optgroup>
+                            <!-- SmartFan -->
+                            <optgroup th:if="${deviceType == 'SmartFan'}" label="Fan">
+                                <option value="TURN_ON">Turn On</option>
+                                <option value="TURN_OFF">Turn Off</option>
+                                <option value="SET_SPEED">Set Speed</option>
+                            </optgroup>
+                            <!-- AirConditioner -->
+                            <optgroup th:if="${deviceType == 'AirConditioner'}" label="AC">
+                                <option value="TURN_ON">Turn On</option>
+                                <option value="TURN_OFF">Turn Off</option>
+                                <option value="SET_TARGET_TEMP">Set Target Temperature</option>
+                                <option value="SET_MODE">Set Mode</option>
+                            </optgroup>
+                            <!-- SmartWindow -->
+                            <optgroup th:if="${deviceType == 'SmartWindow'}" label="Window">
+                                <option value="SET_OPEN_PERCENTAGE">Set Open Percentage</option>
+                            </optgroup>
+                            <!-- SmartPlug -->
+                            <optgroup th:if="${deviceType == 'SmartPlug'}" label="Plug">
+                                <option value="TURN_ON">Turn On</option>
+                                <option value="TURN_OFF">Turn Off</option>
+                            </optgroup>
+                            <!-- SmartTV -->
+                            <optgroup th:if="${deviceType == 'SmartTV'}" label="TV">
+                                <option value="TURN_ON">Turn On</option>
+                                <option value="TURN_OFF">Turn Off</option>
+                                <option value="SET_VOLUME">Set Volume</option>
+                                <option value="SET_INPUT">Set Input</option>
+                            </optgroup>
+                            <!--Refrigerator-->
+                            <optgroup th:if="${deviceType == 'Refrigerator'}" label="Refrigerator">
+                                <option value="TURN_ON">Turn On</option>
+                                <option value="TURN_OFF">Turn Off</option>
+                                <option value="SET_TARGET_TEMP">Set Target Temperature</option>
+                            </optgroup>
+                            <!--Curtain-->
+                            <optgroup th:if="${deviceType == 'Curtain'}" label="Curtain">
+                                <option value="SET_OPEN_PERCENTAGE">Set Open Percentage</option>
+                            </optgroup>
+                            <!--Water Heater-->
+                            <optgroup th:if="${deviceType == 'WaterHeater'}" label="Water Heater">
+                                <option value="TURN_ON">Turn On</option>
+                                <option value="TURN_OFF">Turn Off</option>
+                                <option value="SET_TARGET_TEMP">Set Target Temperature</option>
+                            </optgroup>
+                            <!--Gate-->
+                            <optgroup th:if="${deviceType == 'Gate'}" label="Gate">
+                                <option value="OPEN">Open</option>
+                                <option value="CLOSE">Close</option>
+                            </optgroup>
+                        </select>
+
+                        <div id="valueFieldWrapper" style="display:none;">
+                            <label for="actionValue">Value</label>
+                            <input type="text" id="actionValue" name="actionValue" placeholder="e.g. 70 or COOL">
+                            <select id="actionValueInput" name="actionValue" style="display:none;">
+                                <option value="HDMI1">HDMI 1</option>
+                                <option value="HDMI2">HDMI 2</option>
+                                <option value="HDMI3">HDMI 3</option>
+                                <option value="NETFLIX">Netflix</option>
+                                <option value="YOUTUBE">YouTube</option>
+                                <option value="TV">Live TV</option>
+                            </select>
+                        </div>
+
+                        <div id="oneTimeFields">
+                            <label for="executeAt">Run at</label>
+                            <input type="datetime-local" id="executeAt" name="executeAt">
+                        </div>
+
+                        <div id="recurringFields" style="display:none;">
+                            <label for="recurringTime">Time of day</label>
+                            <input type="time" id="recurringTime" name="recurringTime">
+
+                            <label>Days</label>
+                            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;">
+                                <label style="font-weight:400; text-transform:none;">
+                                    <input type="checkbox" name="daysOfWeek" value="MON" style="width:auto;"> MON
+                                </label>
+                                <label style="font-weight:400; text-transform:none;">
+                                    <input type="checkbox" name="daysOfWeek" value="TUE" style="width:auto;"> TUE
+                                </label>
+                                <label style="font-weight:400; text-transform:none;">
+                                    <input type="checkbox" name="daysOfWeek" value="WED" style="width:auto;"> WED
+                                </label>
+                                <label style="font-weight:400; text-transform:none;">
+                                    <input type="checkbox" name="daysOfWeek" value="THU" style="width:auto;"> THU
+                                </label>
+                                <label style="font-weight:400; text-transform:none;">
+                                    <input type="checkbox" name="daysOfWeek" value="FRI" style="width:auto;"> FRI
+                                </label>
+                                <label style="font-weight:400; text-transform:none;">
+                                    <input type="checkbox" name="daysOfWeek" value="SAT" style="width:auto;"> SAT
+                                </label>
+                                <label style="font-weight:400; text-transform:none;">
+                                    <input type="checkbox" name="daysOfWeek" value="SUN" style="width:auto;"> SUN
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit">Save Schedule</button>
+                    </form>
+
+                    <p class="switch-link"><a th:href="@{/dashboard}">Back to Dashboard</a></p>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function toggleFields() {
+                const type = document.getElementById('scheduleType').value;
+                document.getElementById('oneTimeFields').style.display = type === 'ONE_TIME' ? 'block' : 'none';
+                document.getElementById('recurringFields').style.display = type === 'RECURRING' ? 'block' : 'none';
+            }
+            function toggleValueField() {
+                const action = document.getElementById('action').value;
+                const needsValue = action.startsWith('SET_');
+                document.getElementById('valueFieldWrapper').style.display = needsValue ? 'block' : 'none';
+
+                const isInputAction = action === 'SET_INPUT';
+                document.getElementById('actionValueInput').style.display = isInputAction ? 'block' : 'none';
+                document.getElementById('actionValue').style.display = isInputAction ? 'none' : 'block';
+                document.getElementById('actionValueInput').disabled = !isInputAction;
+                document.getElementById('actionValue').disabled = isInputAction;
+            }
+            toggleValueField();
+        </script>
+    </body>
+</html>

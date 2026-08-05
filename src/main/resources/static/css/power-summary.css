@@ -1,0 +1,178 @@
+.ps-stat-card, .ps-top-card {
+    transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.ps-stat-card:hover, .ps-top-card:hover {
+    border-color: var(--amber);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px -4px rgba(245, 166, 35, 0.3);
+}
+
+.back-link {
+    transition: color 0.15s ease;
+}
+
+.back-link:hover {
+    color: var(--amber-light);
+}
+
+.back-link a:hover::after {
+    transform: scaleX(1); transform-origin: left;
+}
+
+.ps-alert-item {
+    transition: background 0.15s ease;
+}
+
+.ps-alert-item:hover {
+    background: var(--surface-2);
+    border-radius: 6px;
+    padding-left: 8px;
+}
+
+.power-summary-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px;
+    color: var(--text);
+}
+
+.ps-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.back-link {
+    color: var(--amber);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.ps-stats-row, .ps-top-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.ps-stat-card, .ps-top-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    flex: 1;
+    min-width: 160px;
+}
+
+.ps-stat-label, .ps-top-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ps-stat-value {
+    font-size: 24px;
+    font-weight: 600;
+    margin-top: 6px;
+}
+
+.ps-top-value {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 6px;
+}
+
+.ps-top-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 2px;
+}
+
+.trend-up { color: var(--red); }
+.trend-down { color: var(--teal); }
+
+.ps-tariff-section {
+    margin-bottom: 24px;
+}
+
+.tariff-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.tariff-form input {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: var(--text);
+}
+
+.tariff-form button {
+    background: linear-gradient(135deg, var(--amber-light), var(--amber));
+    color: #14171f;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.tariff-form button:hover {
+    box-shadow: 0 4px 16px -4px rgba(245, 166, 35, 0.55);
+    transform: translateY(-1px);
+}
+
+.tariff-form button:active {
+    transform: scale(0.97);
+}
+
+.ps-daily-section, .ps-alerts-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+}
+
+.ps-daily-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0;
+    font-size: 13px;
+}
+
+.ps-day-label { width: 60px; color: var(--text-dim); }
+.ps-day-value { width: 80px; text-align: right; color: var(--text-dim); }
+
+.ps-bar-track {
+    flex: 1;
+    height: 10px;
+    background: var(--surface-2);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.ps-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--amber), var(--amber-light));
+}
+
+.ps-alert-item {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--text-dim);
+}
+
+.ps-alert-item:last-child {
+    border-bottom: none;
+}

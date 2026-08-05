@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Create Your Home</title>
+        <th:block th:replace="~{fragments/head :: favicon}"></th:block>
+        <link rel="stylesheet" th:href="@{/css/auth.css}">
+    </head>
+
+    <body>
+        <div class="auth-page">
+            <div class="auth-hero">
+                <div class="hero-content">
+                    <h1>Let's build<br>your home.</h1>
+                    <p class="hero-tagline">One more step — name your home and its rooms and devices can join it.</p>
+
+                    <div class="device-network">
+                        <svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <line class="net-line active" x1="220" y1="165" x2="220" y2="40"/>
+                            <line class="net-line" x1="220" y1="165" x2="339" y2="126"/>
+                            <line class="net-line active" x1="220" y1="165" x2="294" y2="266"/>
+                            <line class="net-line" x1="220" y1="165" x2="146" y2="266"/>
+                            <line class="net-line" x1="220" y1="165" x2="101" y2="126"/>
+
+                            <g class="net-node hub"><circle cx="220" cy="165" r="16"/></g>
+                            <g class="net-node on"><circle class="ring" cx="220" cy="40" r="11"/><circle class="core" cx="220" cy="40" r="6"/></g>
+                            <g class="net-node off"><circle class="ring" cx="339" cy="126" r="11"/><circle class="core" cx="339" cy="126" r="6"/></g>
+                            <g class="net-node on"><circle class="ring" cx="294" cy="266" r="11"/><circle class="core" cx="294" cy="266" r="6"/></g>
+                            <g class="net-node off"><circle class="ring" cx="146" cy="266" r="11"/><circle class="core" cx="146" cy="266" r="6"/></g>
+                            <g class="net-node off"><circle class="ring" cx="101" cy="126" r="11"/><circle class="core" cx="101" cy="126" r="6"/></g>
+                        </svg>
+                    </div>
+
+                    <p class="hero-support">You can add rooms and devices right after this, from your dashboard.</p>
+                </div>
+            </div>
+
+            <div class="auth-panel">
+                <div class="auth-container">
+                    <div class="hero-mark"><img th:src="@{/images/logo-mark.png}" alt="Smart Home logo" class="hero-logo">SMART HOME · CONTROL CENTER</div>
+                    <h2>Welcome!</h2>
+                    <p class="subtitle">Let's set up your home</p>
+
+                    <form th:action="@{/create-home}" th:object="${homeRequest}" method="post" class="auth-form">
+                        <label for="name">Home Name</label>
+                        <input type="text" id="name" th:field="*{homeName}">
+                        <span style="color:#ef4444;" th:if="${#fields.hasErrors('homeName')}" th:errors="*{homeName}"></span>
+
+                        <label for="address">Address</label>
+                        <input type="text" id="address" th:field="*{homeAddress}">
+                        <span style="color:#ef4444;" th:if="${#fields.hasErrors('homeAddress')}" th:errors="*{homeAddress}"></span>
+
+                        <button type="submit">Create Home</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

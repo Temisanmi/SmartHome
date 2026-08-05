@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Smart Home - Register</title>
+        <th:block th:replace="~{fragments/head :: favicon}"></th:block>
+        <link rel="stylesheet" th:href="@{/css/auth.css}">
+    </head>
+
+    <body>
+        <div class="auth-page">
+            <div class="auth-hero">
+                <div class="hero-content">
+                    <h1>Every room,<br>one dashboard.</h1>
+                    <p class="hero-tagline">Lights, locks, appliances and power — all synced, all in one place.</p>
+
+                    <div class="device-network">
+                        <svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <line class="net-line active" x1="220" y1="165" x2="220" y2="40"/>
+                            <line class="net-line" x1="220" y1="165" x2="339" y2="126"/>
+                            <line class="net-line active" x1="220" y1="165" x2="294" y2="266"/>
+                            <line class="net-line" x1="220" y1="165" x2="146" y2="266"/>
+                            <line class="net-line" x1="220" y1="165" x2="101" y2="126"/>
+
+                            <g class="net-node hub"><circle cx="220" cy="165" r="16"/></g>
+                            <g class="net-node on"><circle class="ring" cx="220" cy="40" r="11"/><circle class="core" cx="220" cy="40" r="6"/></g>
+                            <g class="net-node off"><circle class="ring" cx="339" cy="126" r="11"/><circle class="core" cx="339" cy="126" r="6"/></g>
+                            <g class="net-node on"><circle class="ring" cx="294" cy="266" r="11"/><circle class="core" cx="294" cy="266" r="6"/></g>
+                            <g class="net-node off"><circle class="ring" cx="146" cy="266" r="11"/><circle class="core" cx="146" cy="266" r="6"/></g>
+                            <g class="net-node off"><circle class="ring" cx="101" cy="126" r="11"/><circle class="core" cx="101" cy="126" r="6"/></g>
+                        </svg>
+                    </div>
+
+                    <p class="hero-support">Schedule routines, track live power draw, and catch anything left on before it costs you.</p>
+                </div>
+            </div>
+
+            <div class="auth-panel">
+                <div class="auth-container">
+                    <div class="hero-mark"><img th:src="@{/images/logo-mark.png}" alt="Smart Home logo" class="hero-logo">SMART HOME · CONTROL CENTER</div>
+
+                    <h2>Create your account</h2>
+                    <p class="subtitle">Set up your smart home</p>
+
+                    <p class="subtitle" style="color: #ef4444;" th:if="${error}" th:text="${error}"></p>
+
+                    <form th:action="@{/register}" th:object="${user}" method="post" class="auth-form">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" th:field="*{username}">
+                        <span style="color:#ef4444;" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+
+                        <label for="email">Email</label>
+                        <input type="email" id="email" th:field="*{email}">
+                        <span style="color:#ef4444;" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+
+                        <label for="password">Password</label>
+                        <input type="password" id="password" th:field="*{password}">
+                        <span style="color:#ef4444;" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+
+                        <button type="submit">Register</button>
+                    </form>
+
+                    <p class="switch-link">
+                        Already have an account? <a th:href="@{/login}">Log in here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

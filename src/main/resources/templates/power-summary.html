@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <th:block th:replace="~{fragments/head :: favicon}"></th:block>
+        <link rel="stylesheet" th:href="@{/css/nav.css}">
+        <title>Power Summary</title>
+        <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+        <link rel="stylesheet" th:href="@{/css/power-summary.css}">
+    </head>
+
+    <body>
+        <div th:replace="~{fragments/nav :: nav}"></div>
+
+        <div class="power-summary-container">
+            <div class="ps-header">
+                <h1>Power Summary — <span th:text="${home.name}"></span></h1>
+                <a th:href="@{/dashboard}" class="back-link">&larr; Back to Dashboard</a>
+            </div>
+
+            <div class="ps-stats-row">
+                <div class="ps-stat-card">
+                    <p class="ps-stat-label">Today</p>
+                    <p class="ps-stat-value" th:text="${#numbers.formatDecimal(summary.kWhToday, 1, 2)} + ' kWh'"></p>
+                </div>
+                <div class="ps-stat-card">
+                    <p class="ps-stat-label">This Month</p>
+                    <p class="ps-stat-value" th:text="${#numbers.formatDecimal(summary.kWhThisMonth, 1, 2)} + ' kWh'"></p>
+                </div>
+                <div class="ps-stat-card" th:if="${summary.percentChangeVsLastMonth != null}">
+                    <p class="ps-stat-label">vs Last Month</p>
+                    <p class="ps-stat-value"
+                       th:classappend="${summary.percentChangeVsLastMonth > 0} ? 'trend-up' : 'trend-down'"
+                       th:text="${(summary.percentChangeVsLastMonth > 0 ? '+' : '')} + ${#numbers.formatDecimal(summary.percentChangeVsLastMonth, 1, 1)} + '%'">
+                    </p>
+                </div>
+                <div class="ps-stat-card" th:if="${summary.estimatedCostThisMonth != null}">
+                    <p class="ps-stat-label">Est. Cost This Month</p>
+                    <p class="ps-stat-value" th:text="${#numbers.formatDecimal(summary.estimatedCostThisMonth, 1, 2)}"></p>
+                </div>
+            </div>
+
+            <div class="ps-tariff-section">
+                <form th:action="@{/power-summary/tariff}" method="post" class="tariff-form">
+                    <label for="tariff">Electricity rate (per kWh)</label>
+                    <input type="number" step="0.01" id="tariff" name="tariffPerKwh"
+                           th:value="${home.tariffPerKwh}" placeholder="e.g. 225.00">
+                    <button type="submit">Save Rate</button>
+                </form>
+            </div>
+
+            <div class="ps-top-row">
+                <div class="ps-top-card" th:if="${summary.topDeviceThisMonth != null}">
+                    <p class="ps-top-label">Top Device This Month</p>
+                    <p class="ps-top-value" th:text="${summary.topDeviceThisMonth.deviceName}"></p>
+                    <p class="ps-top-sub" th:text="${summary.topDeviceThisMonth.roomName} + ' · ' + ${#numbers.formatDecimal(summary.topDeviceThisMonth.kWh, 1, 2)} + ' kWh'"></p>
+                </div>
+                <div class="ps-top-card" th:if="${summary.topRoomThisMonth != null}">
+                    <p class="ps-top-label">Top Room This Month</p>
+                    <p class="ps-top-value" th:text="${summary.topRoomThisMonth.roomName}"></p>
+                    <p class="ps-top-sub" th:text="${#numbers.formatDecimal(summary.topRoomThisMonth.kWh, 1, 2)} + ' kWh'"></p>
+                </div>
+            </div>
+
+            <div class="ps-daily-section" th:if="${!summary.roomBreakdownThisMonth.isEmpty()}">
+                <h2>By Room This Month</h2>
+                <div class="ps-daily-bars">
+                    <div class="ps-daily-bar-row" th:each="roomEnergy : ${summary.roomBreakdownThisMonth}">
+                        <span class="ps-day-label" th:text="${roomEnergy.roomName}"></span>
+                        <div class="ps-bar-track">
+                            <div class="ps-bar-fill" th:style="'width: ' + ${roomEnergy.kWh / summary.kWhThisMonth * 100} + '%'"></div>
+                        </div>
+                        <span class="ps-day-value" th:text="${#numbers.formatDecimal(roomEnergy.kWh, 1, 2)} + ' kWh'"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ps-alerts-section" th:if="${!summary.leftOnAlerts.isEmpty()}">
+                <h2>Possibly Left On</h2>
+                <div class="ps-alert-item" th:each="alert : ${summary.leftOnAlerts}">
+                    <span th:text="${alert.deviceName}"></span> in <span th:text="${alert.roomName}"></span>
+                    — on for <span th:text="${alert.hoursOn}"></span>+ hours
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

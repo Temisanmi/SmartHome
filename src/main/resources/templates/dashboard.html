@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+    <html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <th:block th:replace="~{fragments/head :: favicon}"></th:block>
+        <link rel="stylesheet" th:href="@{/css/nav.css}">
+        <title>Smart Home Dashboard</title>
+        <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    </head>
+
+    <body>
+        <header class="dashboard-header">
+            <h1 th:text="${home.name}">My Home</h1>
+            <div th:replace="~{fragments/nav :: nav}"></div>
+            <h2 th:text="${home.address}">Address</h2>
+        </header>
+
+        <div class="flash-message" id="flashMessage" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+        <div class="power-summary">
+            <div class="power-total">
+                <div class="power-total-stats">
+                    <span class="power-total-number" th:text="${powerSummary.totalWatts}">0</span>
+                    <span class="power-total-unit">W</span>
+                    <span class="power-total-label" th:text="'· ' + ${powerSummary.totalDevicesOn} + ' devices active'"></span>
+                </div>
+
+                <a th:href="@{/power-summary}" class="power-summary-btn">Power Summary</a>
+            </div>
+
+            <div class="power-room-breakdown">
+                <button type="button" class="power-room-item"
+                        th:each="roomStat, iterStat : ${powerSummary.roomBreakdown}"
+                        th:if="${roomStat.deviceCount > 0}"
+                        th:attr="data-room-index=${iterStat.index}"
+                        onclick="goToRoom(this.getAttribute('data-room-index'))">
+                    <span th:text="${roomStat.roomName}"></span>
+                    <span th:text="${roomStat.totalWatts} + 'W (' + ${roomStat.deviceCount} + ')'"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="notifications" th:if="${not #lists.isEmpty(notifications)}">
+            <div class="notification-item" th:each="n : ${notifications}" th:if="${!n.read}">
+                <span th:text="${n.message}"></span>
+
+                <span class="notification-time" th:text="${#temporals.format(n.createdAt, 'h:mm a')}"></span>
+
+                <form th:action="@{'/notifications/' + ${n.id} + '/dismiss'}" method="post" style="display:inline;">
+                    <button type="submit" class="mini-delete-btn">×</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="logout-form" style="display: flex; justify-content: flex-end; gap: 10px;">
+            <a th:href="@{/profile}" class="profile-btn" style="text-decoration: none; display: inline-block;">My Profile</a>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
+        </div>
+
+        <div class="add-room-section">
+            <form th:action="@{/rooms/add}" method="post" class="add-room-form">
+                <label>
+                    <input type="text" name="name" placeholder="New room name" required>
+                </label>
+
+                <button type="submit">Add Room</button>
+            </form>
+        </div>
+
+        <div class="room-tabs" id="roomTabs">
+            <button type="button" class="room-tab" th:each="room, iter : ${home.rooms}"
+                    th:text="${room.name}"
+                    th:attr="data-room-index=${iter.index}"
+                    th:classappend="${iter.index == 0} ? 'active' : ''"
+                    onclick="goToRoom(this.getAttribute('data-room-index'))">
+            </button>
+        </div>
+
+        <div class="rooms-container">
+            <div class="room-card" th:each="room, iter : ${home.rooms}" th:attr="data-room-index=${iter.index}" th:classappend="${iter.index == 0} ? '' : 'room-hidden'">
+                <div class="room-card-header">
+                    <h2 th:text="${room.name}">Room Name</h2>
+                    <a th:href="@{'/devices/add?roomId=' + ${room.id}}" class="add-device-link">+ Add Device</a>
+                </div>
+
+                <div class="device-list">
+                    <div class="device-card" th:each="device : ${room.devices}">
+
+                        <!-- SMART LIGHT -->
+                        <div th:if="${device.getClass().getSimpleName() == 'SmartLight'}" th:classappend="${device.powerOn} ? 'device-active' : ''">
+                            <h3 th:text="${device.name}">Light</h3>
+                            <p>Power: <span th:text="${device.powerRatingWatts}"></span>W</p>
+                            <p>Status: <span th:text="${device.powerOn} ? 'ON' : 'OFF'"></span></p>
+                            <p>Brightness: <span th:text="${device.brightness}"></span>%</p>
+
+                            <form th:action="@{'/devices/light/' + ${device.id} + '/toggle-on'}" method="post">
+                                <button type="submit">Turn On</button>
+                            </form>
+
+                            <form th:action="@{'/devices/light/' + ${device.id} + '/toggle-off'}" method="post">
+                                <button type="submit">Turn Off</button>
+                            </form>
+
+                            <form th:action="@{'/devices/light/' + ${device.id} + '/brightness'}" method="post">
+                                <label>
+                                    <input type="range" name="value" min="0" max="100" th:value="${device.brightness}">
+                                </label>
+
+                                <button type="submit">Set Brightness</button>
+                            </form>
+                        </div>
+
+                        <!-- THERMOSTAT -->
+                        <div th:if="${device.getClass().getSimpleName() == 'Thermostat'}">
+                            <h3 th:text="${device.name}">Thermostat</h3>
+                            <p>Power: <span th:text="${device.powerRatingWatts}"></span>W</p>
+                            <p>Current: <span th:text="${device.currentTemperature}"></span>°</p>
+                            <p>Target: <span th:text="${device.targetTemperature}"></span>°</p>
+
+                            <form th:action="@{'/devices/thermostat/' + ${device.id} + '/target-temp'}" method="post">
+                                <label>
+                                    <input type="number" name="value" step="0.5" th:value="${device.targetTemperature}">
+                                </label>
+
+                                <button type="submit">Set Temperature</button>
+                            </form>
+                        </div>
+
+                        <!-- SMART LOCK -->
+                        <div th:if="${device.getClass().getSimpleName() == 'SmartLock'}" th:classappend="${device.locked} ? 'device-active' : ''">
+                            <h3 th:text="${device.name}">Lock</h3>
+                            <p>Power: <span th:text="${device.powerRatingWatts}"></span>W</p>
+                            <p>Status: <span th:text="${device.locked} ? 'LOCKED' : 'UNLOCKED'"></span></p>
+
+                            <form th:action="@{'/devices/lock/' + ${device.id} + '/lock'}" method="post">
+                                <button type="submit">Lock</button>
+                            </form>
+
+                            <form th:action="@{'/devices/lock/' + ${device.id} + '/unlock'}" method="post">
+                                <button type="submit">Unlock</button>
+                            </form>
+                        </div>
+
+                        <!-- SMART FAN -->
+                        <div th:if="${device.getClass().getSimpleName() == 'SmartFan'}" th:classappend="${device.powerOn} ? 'device-active' : ''">
+                            <h3 th:text="${device.name}">Fan</h3>
+                            <p>Power: <span th:text="${device.powerRatingWatts}"></span>W</p>
+                            <p>Status: <span th:text="${device.powerOn} ? 'ON' : 'OFF'"></span></p>
+                            <p>Speed: <span th:text="${device.speed}"></span></p>
+
+                            <form th:action="@{'/devices/fan/' + ${device.id} + '/toggle-on'}" method="post">
+                                <button type="submit">Turn On</button>
+                            </form>
+
+                            <form th:action="@{'/devices/fan/' + ${device.id} + '/toggle-off'}" method="post">
+                                <button type="submit">Turn Off</button>
+                            </form>
+
+                            <form th:action="@{'/devices/fan/' + ${device.id} + '/speed'}" method="post">
+                                <label>
+                                    <input type="number" name="value" min="1" max="5" th:value="${device.speed}">
+                                </label>
+
+                                <button type="submit">Set Speed</button>
+                            </form>
+                        </div>
+
+                        <!-- AIR CONDITIONER -->
+                        <div th:if="${device.getClass().getSimpleName() == 'AirConditioner'}" th:classappend="${device.powerOn} ? 'device-active' : ''">
+                            <h3 th:text="${device.name}">Air Conditioner</h3>
+                            <p>Power: <span th:text="${device.powerRatingWatts}"></span>W</p>
+                            <p>Status: <span th:text="${device.powerOn} ? 'ON' : 'OFF'"></span></p>
+                            <p>Target: <span th:text="${device.targetTemperature}"></span>°</p>
+                            <p>Mode: <span th:text="${device.mode}"></span></p>
+
+                            <form th:action="@{'/devices/ac/' + ${device.id} + '/toggle-on'}" method="post">
+                                <button type="submit">Turn On</button>
+                            </form>
+
+                            <form th:action="@{'/devices/ac/' + ${device.id} + '/toggle-off'}" method="post">
+                                <button type="submit">Turn Off</button>
+                            </form>
+
+                            <form th:action="@{'/devices/ac/' + ${device.id} + '/target-temp'}" method="post">
+                                <label>
+                                    <input type="number" name="value" step="0.5" th:value="${device.targetTemperature}">
+                                </label>
+
+                                <button type="submit">Set Temp</button>
+                            </form>
+
+                            <form th:action="@{'/devices/ac/' + ${device.id} + '/mode'}" method="post">
+                                <label>
+                                    <select name="value">
+                                        <option value="COOL">Cool</option>
+                                        <option value="FAN">Fan</option>
+                                        <option value="DRY">Dry</option>
+                                        <option value="AUTO">Auto</option>
+                                    </select>
+                                </label>
+
+                                <button type="submit">Set Mode</button>
+                            </form>
+                        </div>
+
+                        <!-- SMART WINDOW -->
+                        <div th:if="${device.getClass().getSimpleName() == 'SmartWindow'}">
+                            <h3 th:text="${device.name}">Window</h3>
+                            <p>Power: <span th:text="${device.powerRatingWatts}"></span>W</p>
+                            <p>Open: <span th:text="${device.openPercentage}"></span>%</p>
+
+                            <form th:action="@{'/devices/window/' + ${device.id} + '/open-percentage'}" method="post">
+                                <label>
+                                    <input type="range" name="value" min="0" max="100" th:value="${device.openPercentage}">
+                                </label>
+
+                                <button type="submit">Set</button>
+                            </form>
+                        </div>
+
+                        <!-- SMART TV -->
+                        <div th:if="${device.getClass().getSimpleName() == 'SmartTV'}" th:classappend="${device.powerOn} ? 'device-active' : ''">
+                            <h3 th:text="${device.name}">TV</h3>
+                            <p>Power: <span th:text="${device.powerRatingWatts}"></span>W</p>
+                            <p>Status: <span th:text="${device.powerOn} ? 'ON' : 'OFF'"></span></p>
+                            <p>Volume: <span th:text="${device.volume}"></span></p>
+                            <p>Input: <span th:text="${device.currentInput}"></span></p>
+
+                            <form th:action="@{'/devices/tv/' + ${device.id} + '/toggle-on'}" method="post">
+                                <button type="submit">Turn On</button>
+                            </form>
+
+                            <form th:action="@{'/devices/tv/' + ${device.id} + '/toggle-off'}" method="post">
+                                <button type="submit">Turn Off</button>
+                            </form>
+
+                            <form th:action="@{'/devices/tv/' + ${device.id} + '/volume'}" method="post">
+                                <label>
+                                    <input type="range" name="value" min="0" max="100" th:value="${device.volume}">
+                                </label>
+
+                                <button type="submit">Set Volume</button>
+                            </form>
+
+                            <form th:action="@{'/devices/tv/' + ${device.id} + '/input'}" method="post">
+                                <label>
+                                    <select name="value">
+                                        <option value="HDMI1">HDMI 1</option>
+                                        <option value="HDMI2">HDMI 2</option>
+                                        <option value="HDMI3">HDMI 3</option>
+                                        <option value="NETFLIX">Netflix</option>
+                                        <option value="YOUTUBE">YouTube</option>
+                                        <option value="TV">Live TV</option>
+                                    </select>
+                                </label>
+
+                                <button type="submit">Set Input</button>
+                            </form>
+                        </div>
+
+                        <!-- REFRIGERATOR -->
+                        <div th:if="${device.getClass().getSimpleName() == 'Refrigerator'}" th:classappend="${device.powerOn} ? 'device-active' : ''">
+                            <h3 th:text="${device.name}">Refrigerator</h3>
+                            <p>Power: <span th:text="${device.powerRatingWatts}"></span>W</p>
+                            <p>Status: <span th:text="${device.powerOn} ? 'ON' : 'OFF'"></span></p>
+                            <p>Current: <span th:text="${device.currentTemperature}"></span>°</p>
+                            <p>Target: <span th:text="${device.targetTemperature}"></span>°</p>
+                            <p th:if="${device.doorOpen}" class="alarm">Door Open</p>
+
+                            <form th:action="@{'/devices/fridge/' + ${device.id} + '/toggle-on'}" method="post">
+                                <button type="submit">Turn On</button>
+                            </form>
+
+                            <form th:action="@{'/devices/fridge/' + ${device.id} + '/toggle-off'}" method="post">
+                                <button type="submit">Turn Off</button>
+                            </form>
+
+                            <form th:action="@{'/devices/fridge/' + ${device.id} + '/target-temp'}" method="post">
+                                <label>
+                                    <input type="number" name="value" step="0.5" th:value="${device.targetTemperature}">
+                                </label>
+
+                                <button type="submit">Set Temp</button>
+                            </form>
+                        </div>
+
+                        <!-- CURTAIN -->
+                        <div th:if="${device.getClass().getSimpleName() == 'Curtain'}">
+                            <h3 th:text="${device.name}">Curtain</h3>
+                            <p>Power: <span th:text="${device.powerRatingWatts}"></span>W</p>
+                            <p>Open: <span th:text="${device.openPercentage}"></span>%</p>
+
+                            <form th:action="@{'/devices/curtain/' + ${device.id} + '/open-percentage'}" method="post">
+                                <label>
+                                    <input type="range" name="value" min="0" max="100" th:value="${device.openPercentage}">
+                                </label>
+                                <button type="submit">Set</button>
+                            </form>
+                        </div>
+
+                        <!-- WATER HEATER -->
+                        <div th:if="${device.getClass().getSimpleName() == 'WaterHeater'}" th:classappend="${device.powerOn} ? 'device-active' : ''">
+                            <h3 th:text="${device.name}">Water Heater</h3>
+                            <p>Power: <span th:text="${device.powerRatingWatts}"></span>W</p>
+                            <p>Status: <span th:text="${device.powerOn} ? 'ON' : 'OFF'"></span></p>
+                            <p>Current: <span th:text="${device.currentTemperature}"></span>°</p>
+                            <p>Target: <span th:text="${device.targetTemperature}"></span>°</p>
+
+                            <form th:action="@{'/devices/waterheater/' + ${device.id} + '/toggle-on'}" method="post">
+                                <button type="submit">Turn On</button>
+                            </form>
+
+                            <form th:action="@{'/devices/waterheater/' + ${device.id} + '/toggle-off'}" method="post">
+                                <button type="submit">Turn Off</button>
+                            </form>
+
+                            <form th:action="@{'/devices/waterheater/' + ${device.id} + '/target-temp'}" method="post">
+                                <label>
+                                    <input type="number" name="value" step="0.5" th:value="${device.targetTemperature}">
+                                </label>
+                                <button type="submit">Set Temp</button>
+                            </form>
+                        </div>
+
+                        <!-- GATE -->
+                        <div th:if="${device.getClass().getSimpleName() == 'Gate'}" th:classappend="${device.open} ? 'device-active' : ''">
+                            <h3 th:text="${device.name}">Gate</h3>
+                            <p>Power: <span th:text="${device.powerRatingWatts}"></span>W</p>
+                            <p>Status: <span th:text="${device.open} ? 'OPEN' : 'CLOSED'"></span></p>
+
+                            <form th:action="@{'/devices/gate/' + ${device.id} + '/open'}" method="post">
+                                <button type="submit">Open</button>
+                            </form>
+
+                            <form th:action="@{'/devices/gate/' + ${device.id} + '/close'}" method="post">
+                                <button type="submit">Close</button>
+                            </form>
+                        </div>
+
+                        <div class="device-timestamp" th:if="${device.lastLog != null}"
+                             th:with="mins=${T(java.time.Duration).between(device.lastLog.timestamp, T(java.time.LocalDateTime).now()).toMinutes()}">
+                            <p>Last changed: <span th:text="${#temporals.format(device.lastLog.timestamp, 'MMM d, h:mm a')}"></span></p>
+                            <p><span th:text="${mins}"></span> min ago</p>
+                        </div>
+
+                        <form th:action="@{'/devices/' + ${device.id} + '/delete'}" method="post" class="delete-form"
+                              onsubmit="return confirm('Remove this device?');">
+
+                            <button type="submit" class="delete-btn">Remove Device</button>
+                        </form>
+
+                        <a th:href="@{'/schedules/add?deviceId=' + ${device.id}}" class="schedule-link">+ Schedule</a>
+
+                        <div class="schedule-list" th:if="${not #lists.isEmpty(device.schedules)}">
+                            <div class="schedule-item" th:each="schedule : ${device.schedules}" th:if="${schedule.active}">
+                                <span th:if="${schedule.scheduleType == 'ONE_TIME'}"
+                                      th:text="${schedule.action} + ' at ' + ${#temporals.format(schedule.executeAt, 'MMM d, h:mm a')}">
+                                </span>
+
+                                <span th:if="${schedule.scheduleType == 'RECURRING'}"
+                                      th:text="${schedule.action} + ' daily at ' + ${schedule.recurringTime} + ' (' + ${schedule.daysOfWeek} + ')'">
+                                </span>
+
+                                <form th:action="@{'/schedules/' + ${schedule.id} + '/delete'}" method="post" style="display:inline;">
+                                    <button type="submit" class="mini-delete-btn">×</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function goToRoom(targetIndex) {
+                document.querySelectorAll('.room-tab').forEach(tab => {
+                    tab.classList.toggle('active', tab.getAttribute('data-room-index') === targetIndex);
+                });
+
+                document.querySelectorAll('.room-card').forEach(card => {
+                    card.classList.toggle('room-hidden', card.getAttribute('data-room-index') !== targetIndex);
+                });
+
+                document.getElementById('roomTabs').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            const flashMessage = document.getElementById('flashMessage');
+            if (flashMessage) {
+                setTimeout(() => {
+                    flashMessage.style.transition = 'opacity 0.4s ease';
+                    flashMessage.style.opacity = '0';
+                    setTimeout(() => flashMessage.remove(), 400);
+                }, 3000);
+            }
+        </script>
+    </body>
+</html>

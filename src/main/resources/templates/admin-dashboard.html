@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <th:block th:replace="~{fragments/head :: favicon}"></th:block>
+        <link rel="stylesheet" th:href="@{/css/nav.css}">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Administration | SmartHome</title>
+        <link rel="stylesheet" th:href="@{/css/admin.css}">
+    </head>
+
+    <body>
+        <main class="admin-shell">
+            <header class="admin-header">
+                <div>
+                    <p class="eyebrow">SmartHome - Control Centre</p>
+                    <h1>Administrator dashboard</h1>
+                    <p class="header-copy">Monitor accounts, homes, connected devices, and system activity.</p>
+                </div>
+
+                <div class="admin-actions">
+                    <div th:replace="~{fragments/nav :: nav}"></div>
+                    <span class="admin-identity">
+                        Admin <strong th:text="${adminUsername}">username</strong>
+                    </span>
+
+                    <form th:action="@{/logout}" method="post">
+                        <button class="logout-btn" type="submit">Log out</button>
+                    </form>
+                </div>
+            </header>
+
+            <section class="metrics" aria-label="System totals">
+                <article class="metric-card"><span class="metric-label">Active users</span><strong th:text="${activeUserCount}">0</strong><small>Accounts able to sign in</small></article>
+                <article class="metric-card"><span class="metric-label">Homes</span><strong th:text="${homeCount}">0</strong><small>Homes created</small></article>
+                <article class="metric-card"><span class="metric-label">Rooms</span><strong th:text="${roomCount}">0</strong><small>Managed spaces</small></article>
+                <article class="metric-card"><span class="metric-label">Devices</span><strong th:text="${deviceCount}">0</strong><small>Connected devices</small></article>
+            </section>
+
+            <section class="panel users-panel">
+                <div class="panel-heading">
+                    <div><p class="section-kicker">Account directory</p><h2>Users</h2></div>
+                    <form class="search-form" th:action="@{/admin/dashboard}" method="get">
+                        <input type="search" name="query" th:value="${query}" placeholder="Search username or email" aria-label="Search users">
+                        <button type="submit">Search</button>
+                        <a th:if="${!query.isEmpty()}" th:href="@{/admin/dashboard}">Clear</a>
+                    </form>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Status</th><th>Created</th><th><span class="sr-only">Actions</span></th></tr></thead>
+                        <tbody>
+                            <tr th:each="user : ${users.content}">
+                                <td class="user-name" th:text="${user.username}">username</td>
+                                <td th:text="${user.email}">email</td>
+                                <td><span class="role-badge" th:classappend="${user.role.name() == 'ADMIN'} ? ' role-admin' : ' role-user'" th:text="${user.role}">USER</span></td>
+                                <td><span class="status" th:classappend="${user.active} ? ' status-active' : ' status-suspended'" th:text="${user.active ? 'Active' : 'Suspended'}">Active</span></td>
+                                <td class="date" th:text="${#temporals.format(user.createdAt, 'dd MMM yyyy')}">date</td>
+                                <td><a class="view-link" th:href="@{/admin/users/{id}(id=${user.id})}">Manage user</a></td>
+                            </tr>
+                            <tr th:if="${users.empty}"><td colspan="6" class="empty-state">No accounts matched your search.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav class="pagination" th:if="${users.totalPages > 1}" aria-label="User pages">
+                    <a th:classappend="${users.first} ? ' disabled'" th:href="@{/admin/dashboard(page=${users.number - 1},query=${query})}">â† Previous</a>
+                    <span th:text="${'Page ' + (users.number + 1) + ' of ' + users.totalPages}">Page 1 of 1</span>
+                    <a th:classappend="${users.last} ? ' disabled'" th:href="@{/admin/dashboard(page=${users.number + 1},query=${query})}">Next â†’</a>
+                </nav>
+            </section>
+
+            <section class="panel activity-panel">
+                <div class="panel-heading"><div><p class="section-kicker">Accountability</p><h2>Recent administrator activity</h2></div></div>
+                <div class="activity-list" th:if="${!recentActivity.empty}">
+                    <article class="activity-item" th:each="event : ${recentActivity}">
+                        <span class="activity-dot"></span>
+                        <div><strong th:text="${event.action.replace('_', ' ')}">USER UPDATED</strong><p th:text="${event.details}">Details</p></div>
+                        <time th:text="${#temporals.format(event.createdAt, 'dd MMM, HH:mm')}">now</time>
+                    </article>
+                </div>
+                <p class="empty-state" th:if="${recentActivity.empty}">Administrative changes will appear here.</p>
+            </section>
+        </main>
+    </body>
+</html>
