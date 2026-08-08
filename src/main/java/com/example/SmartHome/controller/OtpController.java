@@ -7,6 +7,7 @@ import com.example.SmartHome.repository.UserRepository;
 import com.example.SmartHome.service.OtpService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,8 +19,14 @@ public class OtpController {
     private final UserRepository userRepository;
     private final OtpService otpService;
 
+    @Value("${app.dev-mode:false}")
+    private boolean devMode;
+
     @GetMapping("/verify-otp")
-    public String verifyOtpPage() {
+    public String verifyOtpPage(HttpSession session, Model model) {
+        if (devMode) {
+            model.addAttribute("devOtp", session.getAttribute("devOtp"));
+        }
         return "verify-otp";
     }
 
@@ -36,14 +43,20 @@ public class OtpController {
                     : "redirect:/dashboard";
         }
         model.addAttribute("error", "Invalid or expired code. Please try again.");
+        if (devMode) {
+            model.addAttribute("devOtp", session.getAttribute("devOtp"));
+        }
         return "verify-otp";
     }
 
     @PostMapping("/verify-otp/resend")
-    public String resendOtp(Authentication authentication) {
+    public String resendOtp(Authentication authentication, HttpSession session) {
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         otpService.generateAndSendOtp(user);
+        if (devMode) {
+            session.setAttribute("devOtp", user.getOtpCode());
+        }
         return "redirect:/verify-otp";
     }
 }
