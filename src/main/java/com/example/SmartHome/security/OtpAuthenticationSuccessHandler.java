@@ -19,9 +19,6 @@ public class OtpAuthenticationSuccessHandler implements AuthenticationSuccessHan
     @Autowired private UserRepository userRepository;
     @Autowired private OtpService otpService;
 
-    @Value("${app.dev-mode:false}")
-    private boolean devMode;
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -29,10 +26,6 @@ public class OtpAuthenticationSuccessHandler implements AuthenticationSuccessHan
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         otpService.generateAndSendOtp(user);
-
-        if (devMode) {
-            request.getSession().setAttribute("devOtp", user.getOtpCode());
-        }
         request.getSession().setAttribute("otpVerified", false);
         response.sendRedirect("/verify-otp");
     }

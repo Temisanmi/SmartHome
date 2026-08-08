@@ -31,11 +31,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register", "/login", "/verify-otp",
                                 "/forgot-password","/reset-password", "/css/**", "/js/**",
-                                "/images/**",
-                                "/favicon.ico",
-                                "/favicon-16x16.png",
-                                "/favicon-32x32.png",
-                                "/apple-touch-icon.png").permitAll()
+                                "/images/**", "/favicon.ico", "/favicon-16x16.png",
+                                "/favicon-32x32.png", "/apple-touch-icon.png").permitAll()
                         .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/users/**", "/api/homes/**", "/api/rooms/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

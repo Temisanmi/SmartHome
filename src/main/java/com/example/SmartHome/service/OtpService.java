@@ -2,15 +2,16 @@ package com.example.SmartHome.service;
 
 import com.example.SmartHome.entity.User;
 import com.example.SmartHome.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class OtpService {
-    @Autowired private UserRepository userRepository;
-    @Autowired private OtpSender otpSender;
+    private final  UserRepository userRepository;
+    private final OtpSender otpSender;
 
     private static final long OTP_VALID_MINUTES = 1;
     private final SecureRandom random = new SecureRandom();
@@ -30,6 +31,7 @@ public class OtpService {
         if (LocalDateTime.now().isAfter(user.getOtpExpiry())) return false;
 
         boolean matches = user.getOtpCode().equals(inputCode);
+
         if (matches) {
             user.setOtpCode(null);
             user.setOtpExpiry(null);

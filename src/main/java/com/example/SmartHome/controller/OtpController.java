@@ -23,9 +23,11 @@ public class OtpController {
     private boolean devMode;
 
     @GetMapping("/verify-otp")
-    public String verifyOtpPage(HttpSession session, Model model) {
+    public String verifyOtpPage(Authentication authentication, Model model) {
         if (devMode) {
-            model.addAttribute("devOtp", session.getAttribute("devOtp"));
+            User user = userRepository.findByUsername(authentication.getName())
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
+            model.addAttribute("devOtp", formatDevOtp(user));
         }
         return "verify-otp";
     }
@@ -44,19 +46,21 @@ public class OtpController {
         }
         model.addAttribute("error", "Invalid or expired code. Please try again.");
         if (devMode) {
-            model.addAttribute("devOtp", session.getAttribute("devOtp"));
+            model.addAttribute("devOtp", formatDevOtp(user));
         }
         return "verify-otp";
     }
 
     @PostMapping("/verify-otp/resend")
-    public String resendOtp(Authentication authentication, HttpSession session) {
+    public String resendOtp(Authentication authentication) {
         User user = userRepository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         otpService.generateAndSendOtp(user);
-        if (devMode) {
-            session.setAttribute("devOtp", user.getOtpCode());
-        }
         return "redirect:/verify-otp";
+    }
+
+    private String formatDevOtp(User user) {
+        return String.format("OTP for %s (%s): %s",
+                user.getUsername(), user.getEmail(), user.getOtpCode());
     }
 }

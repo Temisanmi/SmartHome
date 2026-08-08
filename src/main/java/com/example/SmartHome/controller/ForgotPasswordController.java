@@ -1,5 +1,7 @@
 package com.example.SmartHome.controller;
 
+import com.example.SmartHome.entity.User;
+import com.example.SmartHome.repository.UserRepository;
 import com.example.SmartHome.service.PasswordResetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class ForgotPasswordController {
     private final PasswordResetService passwordResetService;
+    private final UserRepository userRepository;
 
     @Value("${app.dev-mode:false}")
     private boolean devMode;
@@ -21,13 +24,16 @@ public class ForgotPasswordController {
     public String forgotPasswordPage(){
         return "forgot-password";
     }
-
     @PostMapping("/forgot-password")
     public String requestReset(@RequestParam String email, Model model){
         String rawToken = passwordResetService.initiateReset(email);
         model.addAttribute("message", "If an account exists for that email, a reset link has been sent.");
         if (devMode && rawToken != null) {
-            model.addAttribute("devResetLink", "/reset-password?token=" + rawToken);
+            User user = userRepository.findByEmail(email).orElse(null);
+            String username = (user != null) ? user.getUsername() : email;
+            model.addAttribute("devResetLink", String.format(
+                    "Password reset link for %s (%s): /reset-password?token=%s",
+                    username, email, rawToken));
         }
         return "forgot-password";
     }
@@ -41,7 +47,6 @@ public class ForgotPasswordController {
         model.addAttribute("token", token);
         return "reset-password";
     }
-
     @PostMapping("/reset-password")
     public String resetPassword(@RequestParam String token,
                                 @RequestParam String password,

@@ -15,23 +15,16 @@ import java.io.IOException;
 public class OtpVerificationFilter extends OncePerRequestFilter {
 
     private static final String[] ALLOWED_PATHS = {
-            "/verify-otp",
-            "/login",
-            "/logout",
-            "/register",
-            "/forgot-password",
-            "/reset-password",
-            "/css",
-            "/js",
-            "/images",
-            "/favicon.ico",
-            "/favicon-16x16.png",
-            "/favicon-32x32.png",
-            "/apple-touch-icon.png"
+            "/verify-otp", "/login", "/logout", "/register",
+            "/forgot-password", "/reset-password", "/css",
+            "/js", "/images", "/favicon.ico", "/favicon-16x16.png",
+            "/favicon-32x32.png", "/apple-touch-icon.png"
     };
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
             throws ServletException, IOException {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
