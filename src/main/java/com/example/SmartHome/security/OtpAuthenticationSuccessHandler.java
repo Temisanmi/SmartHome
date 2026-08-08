@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,9 @@ public class OtpAuthenticationSuccessHandler implements AuthenticationSuccessHan
     @Autowired private UserRepository userRepository;
     @Autowired private OtpService otpService;
 
+    @Value("${app.dev-mode:false}")
+    private boolean devMode;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -26,6 +30,9 @@ public class OtpAuthenticationSuccessHandler implements AuthenticationSuccessHan
 
         otpService.generateAndSendOtp(user);
 
+        if (devMode) {
+            request.getSession().setAttribute("devOtp", user.getOtpCode());
+        }
         request.getSession().setAttribute("otpVerified", false);
         response.sendRedirect("/verify-otp");
     }
