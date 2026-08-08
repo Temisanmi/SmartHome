@@ -106,5 +106,8 @@
         document.getElementById('otp-form').addEventListener('submit', syncHidden);
       })();
     </script>
+    <script th:if="${devOtp}" th:inline="javascript">
+      console.log('[DEV] OTP code:', /*[[${devOtp}]]*/ '');
+    </script>
   </body>
 </html>
