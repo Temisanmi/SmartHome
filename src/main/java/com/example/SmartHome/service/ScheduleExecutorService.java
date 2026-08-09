@@ -3,7 +3,7 @@ package com.example.SmartHome.service;
 import com.example.SmartHome.entity.*;
 import com.example.SmartHome.repository.NotificationRepository;
 import com.example.SmartHome.repository.ScheduleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -11,20 +11,21 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ScheduleExecutorService {
-    @Autowired private NotificationRepository notificationRepository;
-    @Autowired private ScheduleRepository scheduleRepository;
-    @Autowired private SmartLightService smartLightService;
-    @Autowired private ThermostatService thermostatService;
-    @Autowired private SmartLockService smartLockService;
-    @Autowired private SmartFanService smartFanService;
-    @Autowired private AirConditionerService airConditionerService;
-    @Autowired private SmartWindowService smartWindowService;
-    @Autowired private SmartTVService smartTVService;
-    @Autowired private RefrigeratorService refrigeratorService;
-    @Autowired private CurtainService curtainService;
-    @Autowired private WaterHeaterService waterHeaterService;
-    @Autowired private GateService gateService;
+    private final NotificationRepository notificationRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final SmartLightService smartLightService;
+    private final ThermostatService thermostatService;
+    private final SmartLockService smartLockService;
+    private final SmartFanService smartFanService;
+    private final AirConditionerService airConditionerService;
+    private final SmartWindowService smartWindowService;
+    private final SmartTVService smartTVService;
+    private final RefrigeratorService refrigeratorService;
+    private final CurtainService curtainService;
+    private final WaterHeaterService waterHeaterService;
+    private final GateService gateService;
 
     @Scheduled(fixedRate = 60000)
     public void runDueSchedules() {

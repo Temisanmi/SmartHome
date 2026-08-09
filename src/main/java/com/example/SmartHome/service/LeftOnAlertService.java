@@ -4,7 +4,7 @@ import com.example.SmartHome.entity.*;
 import com.example.SmartHome.repository.DeviceLogRepository;
 import com.example.SmartHome.repository.HomeRepository;
 import com.example.SmartHome.repository.NotificationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -12,10 +12,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class LeftOnAlertService {
-    @Autowired private HomeRepository homeRepository;
-    @Autowired private NotificationRepository notificationRepository;
-    @Autowired private DeviceLogRepository deviceLogRepository;
+    private final HomeRepository homeRepository;
+    private final NotificationRepository notificationRepository;
+    private final DeviceLogRepository deviceLogRepository;
 
     private static final long ALERT_THRESHOLD_HOURS = 8;
 
