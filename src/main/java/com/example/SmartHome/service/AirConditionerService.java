@@ -3,13 +3,14 @@ package com.example.SmartHome.service;
 import com.example.SmartHome.entity.AirConditioner;
 import com.example.SmartHome.exception.DeviceNotFoundException;
 import com.example.SmartHome.repository.AirConditionerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AirConditionerService {
-    @Autowired private AirConditionerRepository airConditionerRepository;
-    @Autowired private DeviceLogService deviceLogService;
+    private final AirConditionerRepository airConditionerRepository;
+    private final DeviceLogService deviceLogService;
 
     public AirConditioner turnOn(Long deviceId) {
         AirConditioner ac = airConditionerRepository.findById(deviceId).orElseThrow(()

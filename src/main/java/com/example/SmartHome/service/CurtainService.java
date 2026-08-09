@@ -3,13 +3,14 @@ package com.example.SmartHome.service;
 import com.example.SmartHome.entity.Curtain;
 import com.example.SmartHome.exception.DeviceNotFoundException;
 import com.example.SmartHome.repository.CurtainRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CurtainService {
-    @Autowired private CurtainRepository curtainRepository;
-    @Autowired private DeviceLogService deviceLogService;
+    private final CurtainRepository curtainRepository;
+    private final DeviceLogService deviceLogService;
 
     public Curtain setOpenPercentage(Long deviceId, int percentage) {
         Curtain curtain = curtainRepository.findById(deviceId).orElseThrow(() ->

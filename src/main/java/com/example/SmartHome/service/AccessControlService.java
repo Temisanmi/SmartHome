@@ -7,13 +7,14 @@ import com.example.SmartHome.exception.RoomNotFoundException;
 import com.example.SmartHome.exception.UnauthorizedDeviceAccessException;
 import com.example.SmartHome.repository.DeviceRepository;
 import com.example.SmartHome.repository.RoomRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AccessControlService {
-    @Autowired private DeviceRepository deviceRepository;
-    @Autowired private RoomRepository roomRepository;
+    private final DeviceRepository deviceRepository;
+    private final RoomRepository roomRepository;
 
     public void verifyDeviceOwnership(Long deviceId, String username) {
         Device device = deviceRepository.findById(deviceId).orElseThrow(() ->

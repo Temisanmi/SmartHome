@@ -13,7 +13,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-
 public abstract class Device {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "device_seq")
