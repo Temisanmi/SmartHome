@@ -3,13 +3,14 @@ package com.example.SmartHome.service;
 import com.example.SmartHome.entity.WaterHeater;
 import com.example.SmartHome.exception.DeviceNotFoundException;
 import com.example.SmartHome.repository.WaterHeaterRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class WaterHeaterService {
-    @Autowired private WaterHeaterRepository waterHeaterRepository;
-    @Autowired private DeviceLogService deviceLogService;
+    private final WaterHeaterRepository waterHeaterRepository;
+    private final DeviceLogService deviceLogService;
 
     public WaterHeater turnOn(Long deviceId) {
         WaterHeater heater = waterHeaterRepository.findById(deviceId).orElseThrow(() ->

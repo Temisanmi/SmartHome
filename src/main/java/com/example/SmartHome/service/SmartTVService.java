@@ -3,13 +3,14 @@ package com.example.SmartHome.service;
 import com.example.SmartHome.entity.SmartTV;
 import com.example.SmartHome.exception.DeviceNotFoundException;
 import com.example.SmartHome.repository.SmartTVRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SmartTVService {
-    @Autowired private SmartTVRepository smartTVRepository;
-    @Autowired private DeviceLogService deviceLogService;
+    private final SmartTVRepository smartTVRepository;
+    private final DeviceLogService deviceLogService;
 
     public SmartTV turnOn(Long deviceId) {
         SmartTV tv = smartTVRepository.findById(deviceId).orElseThrow(() ->

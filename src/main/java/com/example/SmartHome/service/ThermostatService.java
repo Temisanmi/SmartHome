@@ -3,13 +3,14 @@ package com.example.SmartHome.service;
 import com.example.SmartHome.entity.Thermostat;
 import com.example.SmartHome.exception.DeviceNotFoundException;
 import com.example.SmartHome.repository.ThermostatRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ThermostatService {
-    @Autowired private ThermostatRepository thermostatRepository;
-    @Autowired private DeviceLogService deviceLogService;
+    private final ThermostatRepository thermostatRepository;
+    private final DeviceLogService deviceLogService;
 
     public Thermostat setTargetTemperature(Long deviceId, double newTemp) {
         Thermostat thermostat = thermostatRepository.findById(deviceId).orElseThrow(() ->

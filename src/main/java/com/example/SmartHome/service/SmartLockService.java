@@ -3,13 +3,14 @@ package com.example.SmartHome.service;
 import com.example.SmartHome.entity.SmartLock;
 import com.example.SmartHome.exception.DeviceNotFoundException;
 import com.example.SmartHome.repository.SmartLockRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SmartLockService {
-    @Autowired private SmartLockRepository smartLockRepository;
-    @Autowired private DeviceLogService deviceLogService;
+    private final SmartLockRepository smartLockRepository;
+    private final DeviceLogService deviceLogService;
 
     public SmartLock lock(Long deviceId) {
         SmartLock lock = smartLockRepository.findById(deviceId).orElseThrow(() ->

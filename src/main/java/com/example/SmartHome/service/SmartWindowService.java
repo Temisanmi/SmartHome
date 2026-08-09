@@ -3,13 +3,14 @@ package com.example.SmartHome.service;
 import com.example.SmartHome.entity.SmartWindow;
 import com.example.SmartHome.exception.DeviceNotFoundException;
 import com.example.SmartHome.repository.SmartWindowRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SmartWindowService {
-    @Autowired private SmartWindowRepository smartWindowRepository;
-    @Autowired private DeviceLogService deviceLogService;
+    private final SmartWindowRepository smartWindowRepository;
+    private final DeviceLogService deviceLogService;
 
     public SmartWindow setOpenPercentage(Long deviceId, int percentage) {
         SmartWindow window = smartWindowRepository.findById(deviceId).orElseThrow(() ->
