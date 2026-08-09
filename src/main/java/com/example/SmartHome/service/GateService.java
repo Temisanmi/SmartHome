@@ -3,13 +3,14 @@ package com.example.SmartHome.service;
 import com.example.SmartHome.entity.Gate;
 import com.example.SmartHome.exception.DeviceNotFoundException;
 import com.example.SmartHome.repository.GateRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class GateService {
-    @Autowired private GateRepository gateRepository;
-    @Autowired private DeviceLogService deviceLogService;
+    private final GateRepository gateRepository;
+    private final DeviceLogService deviceLogService;
 
     public Gate open(Long deviceId) {
         Gate gate = gateRepository.findById(deviceId).orElseThrow(() ->

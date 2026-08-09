@@ -7,7 +7,7 @@ import com.example.SmartHome.entity.Refrigerator;
 import com.example.SmartHome.entity.Room;
 import com.example.SmartHome.entity.WaterHeater;
 import com.example.SmartHome.repository.DeviceLogRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,8 +15,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class EnergyHistoryService {
-    @Autowired private DeviceLogRepository deviceLogRepository;
+    private final DeviceLogRepository deviceLogRepository;
 
     private static final long LEFT_ON_ALERT_HOURS = 8;
 

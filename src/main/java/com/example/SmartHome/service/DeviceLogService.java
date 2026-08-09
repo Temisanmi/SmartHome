@@ -3,12 +3,13 @@ package com.example.SmartHome.service;
 import com.example.SmartHome.entity.Device;
 import com.example.SmartHome.entity.DeviceLog;
 import com.example.SmartHome.repository.DeviceLogRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class DeviceLogService {
-    @Autowired private DeviceLogRepository deviceLogRepository;
+    private final DeviceLogRepository deviceLogRepository;
 
     public void log(Device device, String eventType, String oldValue, String newValue) {
         DeviceLog logEntry = new DeviceLog();
