@@ -13,7 +13,7 @@ public class OtpService {
     private final  UserRepository userRepository;
     private final OtpSender otpSender;
 
-    private static final long OTP_VALID_MINUTES = 1;
+    private static final long OTP_VALID_MINUTES = 2;
     private final SecureRandom random = new SecureRandom();
 
     public void generateAndSendOtp(User user) {

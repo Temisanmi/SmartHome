@@ -26,7 +26,7 @@ public class ForgotPasswordController {
     }
     @PostMapping("/forgot-password")
     public String requestReset(@RequestParam String email, Model model){
-        String rawToken = passwordResetService.initiateReset(email);
+        String rawToken = passwordResetService.initiateResetAndReturnToken(email);
         model.addAttribute("message", "If an account exists for that email, a reset link has been sent.");
         if (devMode && rawToken != null) {
             User user = userRepository.findByEmail(email).orElse(null);
